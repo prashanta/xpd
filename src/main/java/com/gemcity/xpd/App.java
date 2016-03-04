@@ -27,12 +27,12 @@ public class App
     		try {
     			
     			// Get ExportProfile bean for "part" table
-    			ExportProfile partTableProfile = (ExportProfile)context.getBean("partTableExporProfile");
-    			//ExportProfile partMtlTableProfile = (ExportProfile)context.getBean("partMtlTableExporProfile");
+    			ExportProfile partTableProfile = (ExportProfile)context.getBean("partTableExportProfile");
+    			ExportProfile partMtlTableProfile = (ExportProfile)context.getBean("partMtlTableExportProfile");
     			
     			// Export "part" table
-    			dao.export(partTableProfile);
-    			//dao.export(partMtlTableProfile);
+    			//dao.run(partTableProfile);
+    			dao.run(partMtlTableProfile);
     			
     			
 			} catch (Exception e) {

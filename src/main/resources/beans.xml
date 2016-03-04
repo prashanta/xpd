@@ -5,13 +5,8 @@
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
-        http://www.springframework.org/schema/tx
-        http://www.springframework.org/schema/tx/spring-tx.xsd">
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	>
         
 	<bean id="helloBean" class="com.gemcity.xpd.beans.Test">
 		<property name="name" value="Mr.Robot" />
@@ -19,6 +14,7 @@
 	
 	<bean id="tableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
 		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
 	</bean>
 	
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -30,25 +26,25 @@
 			
 	<bean id="importDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:1016/radix" />
+		<property name="url" value="jdbc:mysql://localhost:3306/radix" />
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 	</bean>
 	
-	<bean id="partTableExporProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="Part" />
 		<property name="exportColumns" value="PartNum, PartDescription, Class, IUM, PUM, TypeCode, MfgComment, PurComment, UserChar1, UserChar2, UserChar3, NonStock, InActive, PhantomBOM" />
-    	<property name="whereClause" value=" WHERE Part.Class LIKE 'DTP%' OR Part.Class LIKE 'NBS%'" />
+    	<property name="whereClause" value=" WHERE Part.InActive = 0" />
     	<property name="importTableName" value="ev_part" />
 		<property name="importColumns" value="PartNum, PartDescription, Class, IUM, PUM, TypeCode, MfgComment, PurComment, MFG, MFGNo, Project, NonStock, InActive, PhantomBOM" />
 	</bean>
 	
-	<!-- <bean id="partMtlTableExporProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
 		<property name="exportTableName" value="PartMtl" />
 		<property name="exportColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
-    	<property name="whereClause" value=" WHERE Part.Class LIKE 'DTP%' OR Part.Class LIKE 'NBS%' OR Part.Class LIKE 'HOR%'" />
+    	<property name="whereClause" value="" />
     	<property name="importTableName" value="ev_partmtl" />
 		<property name="importColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
-	</bean> -->
+	</bean>
 
 </beans>
