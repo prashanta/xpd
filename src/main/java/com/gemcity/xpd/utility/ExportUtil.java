@@ -14,6 +14,11 @@ public class ExportUtil {
 		query += " FROM " + tableName + " " + whereClause;	
 		return query;
 	}
+	
+	public static String cleanString(String s){
+		String clean = s.replaceAll("'", "''").replaceAll("\\\\", "\\\\\\\\").replaceAll("////", "////////");
+		return clean;
+	}
 
 	
 }

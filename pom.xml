@@ -33,6 +33,12 @@
 			<artifactId>spring-jdbc</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.progress</groupId>
+			<artifactId>progress-jdbc</artifactId>
+			<version>9.1D07</version>
+		</dependency>
 
 		<dependency>
 			<groupId>mysql</groupId>

@@ -5,16 +5,31 @@
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+       	http://www.springframework.org/schema/context/spring-context.xsd"
 	>
         
 	<bean id="helloBean" class="com.gemcity.xpd.beans.Test">
 		<property name="name" value="Mr.Robot" />
 	</bean>
 	
-	<bean id="tableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+	<bean id="partTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
 		<property name="exportDataSource" ref="exportDataSource" />
 		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partTableExportProfile" />
+	</bean>
+	
+	<bean id="partMtlTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partMtlTableExportProfile" />
+	</bean>
+	
+	<bean id="partRevTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partRevTableExportProfile" />
 	</bean>
 	
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -42,9 +57,17 @@
 	<bean id="partMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
 		<property name="exportTableName" value="PartMtl" />
 		<property name="exportColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
-    	<property name="whereClause" value="" />
+    	<property name="whereClause" value=""/>
     	<property name="importTableName" value="ev_partmtl" />
 		<property name="importColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
+	</bean>
+	
+	<bean id="partRevTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PartRev" />
+		<property name="exportColumns" value="PartNum, RevDescription, RevisionNum, Approved, ApprovedDate, ApprovedBy, EffectiveDate" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_partrev" />
+		<property name="importColumns" value="PartNum, RevDescription, RevisionNum, Approved, ApprovedDate, ApprovedBy, EffectiveDate" />
 	</bean>
 
 </beans>

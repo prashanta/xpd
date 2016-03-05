@@ -3,10 +3,13 @@ package com.gemcity.xpd.beans;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
 import com.gemcity.xpd.dao.TableExportDAO;
+import com.gemcity.xpd.utility.ExportUtil;
+import com.gemcity.xpd.utility.ProgressBar;
 
 public class ExportProfile {
 	
@@ -79,13 +82,11 @@ public class ExportProfile {
 		return query;
 	}
 
-	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs){
+	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size){
 		ArrayList<String> query= new ArrayList<String>();
-		
 		try{
-
 			int nCols = meta.getColumnCount();
-
+			ProgressBar bar = new ProgressBar(size);
 			while(rs.next()) {
 				int c = importColumns.length - 1;
 				String value = "(";
@@ -93,20 +94,26 @@ public class ExportProfile {
 					String colType = meta.getColumnClassName(i); 
 					if(colType == "java.lang.String"){
 						String val = rs.getString(i);
-						value += val!=null? ("'" + rs.getString(i).replaceAll("'", "''") + "'") : "''";
+						value += val!=null? ("'" + ExportUtil.cleanString(rs.getString(i)) + "'") : "''";
 					}						
 					else if(colType == "java.lang.Integer")
 						value += rs.getInt(i);
 					else if(colType == "java.math.BigDecimal")
 						value += rs.getDouble(i);
+					else if(colType == "java.sql.Date"){
+						Date temp = rs.getDate(i);
+						value += temp != null? ("'" + temp.toString() + "'") : "null";
+					}
 					else if(colType == "java.lang.Boolean")
 						value += "" + rs.getBoolean(i);
-					else
-						log.error("xpd: Nothing matching : " + colType);
+					else{
+						throw new Exception("xpd: Nothing matching : " + colType);
+					}
 					value += (c > 0)? ", " : "";
-					c--;
-				}	
-				query.add(value + ");");				
+					c--;				
+				}					
+				query.add(value + ");");
+				bar.update();
 			}			
 		}
 		catch(Exception e){

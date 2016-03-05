@@ -14,6 +14,9 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import com.gemcity.xpd.beans.ExportProfile;
+import com.gemcity.xpd.utility.ProgressBar;
+import com.mysql.jdbc.PreparedStatement;
+
 import java.sql.Connection;
 
 public class TableExportDAO {
@@ -24,6 +27,7 @@ public class TableExportDAO {
 
 	private DataSource exportDataSource;
 	private DataSource importDataSource;
+	private ExportProfile profile;
 
 	public void setExportDataSource(DataSource exportDataSource) {
 		this.exportDataSource = exportDataSource;
@@ -32,14 +36,19 @@ public class TableExportDAO {
 	public void setImportDataSource(DataSource importDataSource) {
 		this.importDataSource = importDataSource;
 	}
+	
+	public void setProfile(ExportProfile profile){
+		this.profile = profile;
+	}
+	
 
-	public void run(ExportProfile profile) throws FileNotFoundException, UnsupportedEncodingException{
-		ArrayList<String> data = export(profile);
-		saveToFile(data, profile.getExportTableName());
-		importTable(data, profile);
+	public void run() throws FileNotFoundException, UnsupportedEncodingException{
+		ArrayList<String> data = export();
+		saveToFile(data);
+		importTable(data);
 	}
 
-	private ArrayList<String> export(ExportProfile profile){
+	private ArrayList<String> export(){
 		ArrayList<String> data = new ArrayList<String>();
 
 		Connection conn = null;
@@ -55,7 +64,8 @@ public class TableExportDAO {
 
 			// Get number of records 
 			rs.last();
-			log.info("Retrived ["+ rs.getRow() +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			int size = rs.getRow();
+			log.info("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 			rs.beforeFirst();			
 
 			// Get result set meta data - for debug perposes
@@ -69,7 +79,7 @@ public class TableExportDAO {
 			startTime = System.nanoTime();
 
 			// Generate import SQL and write to file
-			data = profile.getImportQuey(meta, rs);
+			data = profile.getImportQuey(meta, rs, size);
 
 			log.info("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		}		
@@ -89,25 +99,26 @@ public class TableExportDAO {
 		return data;
 	}
 
-	private void saveToFile(ArrayList<String> data, String fileName) throws FileNotFoundException, UnsupportedEncodingException{
+	private void saveToFile(ArrayList<String> data) throws FileNotFoundException, UnsupportedEncodingException{
 		long startTime = System.nanoTime();
 
-		PrintWriter writer = new PrintWriter(fileName + ".sql", "UTF-8");
+		PrintWriter writer = new PrintWriter(profile.getExportTableName() + ".sql", "UTF-8");
 		writer.println(data);
 		writer.close();
 
 		log.info("Wrote SQL to file in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 	}
 
-	private void importTable(ArrayList<String> data, ExportProfile profile){
+	private void importTable(ArrayList<String> data){
 		Connection conn = null;
 		try{			
 			// Get DB connection
-			conn = (Connection) importDataSource.getConnection();
+			conn = (Connection) importDataSource.getConnection();			
 			Statement s = conn.createStatement();
 			log.info(">>>> Exporting table : " + profile.getImportTableName());
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
-
+			
+			long startTime = System.nanoTime();
 			String queryPrefix = "INSERT INTO `" + profile.getImportTableName() + "` (";
 			int c = profile.getImportColumns().length - 1;
 			for(String column:profile.getImportColumns()){
@@ -116,11 +127,13 @@ public class TableExportDAO {
 				c--;
 			}
 			queryPrefix += ") VALUES ";
-
+			ProgressBar bar = new ProgressBar(data.size());
 			for(String row : data){
 				String query = queryPrefix + row;	
 				s.executeUpdate(query);
+				bar.update();
 			}
+			System.out.println("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		}		
 		catch(Exception ex){
 			ex.printStackTrace();			
@@ -136,4 +149,81 @@ public class TableExportDAO {
 			}
 		}
 	}
+	
+	private void importTableBatch(ArrayList<String> data){
+		Connection conn = null;
+		try{	
+			// Get DB connection
+			conn = (Connection) importDataSource.getConnection();
+			Statement s = conn.createStatement();
+             
+		    log.info(">>>> Exporting table : " + profile.getImportTableName());
+			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
+			
+			long startTime = System.nanoTime();
+			String queryPrefix = "INSERT INTO `" + profile.getImportTableName() + "` ("; 
+			int c = profile.getImportColumns().length - 1;
+			for(String column:profile.getImportColumns()){
+				queryPrefix += "`"+column+"`";
+				queryPrefix += (c > 0)? ", " : "";
+				c--;
+			}
+			queryPrefix += ") VALUES ";
+			ProgressBar bar = new ProgressBar(data.size());
+			int i=0;
+			for(String row : data){
+				String query = queryPrefix + row;
+				s.addBatch(query);
+                if(i%100 ==0) {
+                	s.executeBatch();
+                	bar.update(i);
+                }
+                i++;
+			}	
+			s.executeBatch();
+			bar.update(i);
+			System.out.println("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+		}		
+		catch(Exception ex){
+			ex.printStackTrace();			
+		}	
+		finally {
+			if (conn != null) {
+				try {
+					conn.close();					
+				} 
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/*private void checkImportTable(){
+		Connection conn = null;
+		try{			
+			// Get DB connection
+			conn = (Connection) importDataSource.getConnection();
+			Statement s = conn.createStatement();
+			ResultSet rs = s.executeQuery("SHOW TABLES LIKE '"+ profile.getImportTableName() +"'");
+			if(rs.next()){
+				log.info("Table exists!");
+			}
+			else 
+				log.error("No table found");					
+		}		
+		catch(Exception ex){
+			ex.printStackTrace();			
+		}	
+		finally {
+			if (conn != null) {
+				try {
+					conn.close();					
+				} 
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}*/
 }
