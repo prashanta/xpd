@@ -25,7 +25,7 @@ public class ProgressBar {
 			this.pct = temp;
 			int x = (this.pct * this.size) / 100;
 			while(x-- > 0)
-				bar += "#";
+				bar += "=";
 			bar = String.format("%1$-"+this.size+"s", bar);
 			
 			System.out.print("[" + bar + "] " + ((this.current * 100) / this.total) + "% \r");

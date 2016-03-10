@@ -41,13 +41,18 @@ public class TableExportDAO {
 		this.profile = profile;
 	}
 	
-
+	/*
+	 * Run the exporter.
+	 */
 	public void run() throws FileNotFoundException, UnsupportedEncodingException{
 		ArrayList<String> data = export();
 		saveToFile(data);
-		importTable(data);
+		importTableBatch(data);
 	}
 
+	/*
+	 * Get export data from Progress database.
+	 */
 	private ArrayList<String> export(){
 		ArrayList<String> data = new ArrayList<String>();
 
@@ -99,6 +104,9 @@ public class TableExportDAO {
 		return data;
 	}
 
+	/*
+	 * Save exported data to a file
+	 */
 	private void saveToFile(ArrayList<String> data) throws FileNotFoundException, UnsupportedEncodingException{
 		long startTime = System.nanoTime();
 
@@ -109,13 +117,17 @@ public class TableExportDAO {
 		log.info("Wrote SQL to file in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 	}
 
+	/*
+	 * Import data to MySQL database
+	 */
 	private void importTable(ArrayList<String> data){
 		Connection conn = null;
 		try{			
 			// Get DB connection
 			conn = (Connection) importDataSource.getConnection();			
 			Statement s = conn.createStatement();
-			log.info(">>>> Exporting table : " + profile.getImportTableName());
+			log.info(">>>> Importing table : " + profile.getImportTableName());
+			// First clean up the table
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
 			
 			long startTime = System.nanoTime();
@@ -150,6 +162,9 @@ public class TableExportDAO {
 		}
 	}
 	
+	/*
+	 * Bulk import data to MySQL database
+	 */
 	private void importTableBatch(ArrayList<String> data){
 		Connection conn = null;
 		try{	
@@ -157,7 +172,7 @@ public class TableExportDAO {
 			conn = (Connection) importDataSource.getConnection();
 			Statement s = conn.createStatement();
              
-		    log.info(">>>> Exporting table : " + profile.getImportTableName());
+		    log.info(">>>> Batch Importing table : " + profile.getImportTableName());
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
 			
 			long startTime = System.nanoTime();

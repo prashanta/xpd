@@ -7,9 +7,10 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-       	http://www.springframework.org/schema/context/spring-context.xsd"
-	>
-        
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+                
 	<bean id="helloBean" class="com.gemcity.xpd.beans.Test">
 		<property name="name" value="Mr.Robot" />
 	</bean>
@@ -32,6 +33,37 @@
 		<property name="profile" ref="partRevTableExportProfile" />
 	</bean>
 	
+	<bean id="partPlantTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partPlantTableExportProfile" />
+	</bean>
+
+	<bean id="aprvVendTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="aprvVendTableExportProfile" />
+	</bean>
+
+	<bean id="plantWhseTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="plantWhseTableExportProfile" />
+	</bean>
+
+	<bean id="vendorTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="vendorTableExportProfile" />
+	</bean>
+
+	<bean id="partOprTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partOprTableExportProfile" />
+	</bean>
+	
+	<!-- DATABASE CONNECTIONS -->
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.progress.sql.jdbc.JdbcProgressDriver" />
 		<property name="url" value="jdbc:jdbcprogress:T:192.168.74.20:6100:mfgsys" />
@@ -46,14 +78,17 @@
 		<property name="password" value="root" />
 	</bean>
 	
+	<!-- Part Table Profile -->
 	<bean id="partTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="Part" />
 		<property name="exportColumns" value="PartNum, PartDescription, Class, IUM, PUM, TypeCode, MfgComment, PurComment, UserChar1, UserChar2, UserChar3, NonStock, InActive, PhantomBOM" />
-    	<property name="whereClause" value=" WHERE Part.InActive = 0" />
+    	<property name="whereClause" value=" WHERE Part.InActive = 0" /> 
+    	<!-- <property name="whereClause" value=" WHERE Part.Class LIKE 'DTP%'" /> -->
     	<property name="importTableName" value="ev_part" />
 		<property name="importColumns" value="PartNum, PartDescription, Class, IUM, PUM, TypeCode, MfgComment, PurComment, MFG, MFGNo, Project, NonStock, InActive, PhantomBOM" />
 	</bean>
 	
+	<!-- PartMtl Table Profile -->
 	<bean id="partMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
 		<property name="exportTableName" value="PartMtl" />
 		<property name="exportColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
@@ -62,6 +97,7 @@
 		<property name="importColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
 	</bean>
 	
+	<!-- PartRev Table Profile -->
 	<bean id="partRevTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
 		<property name="exportTableName" value="PartRev" />
 		<property name="exportColumns" value="PartNum, RevDescription, RevisionNum, Approved, ApprovedDate, ApprovedBy, EffectiveDate" />
@@ -69,5 +105,51 @@
     	<property name="importTableName" value="ev_partrev" />
 		<property name="importColumns" value="PartNum, RevDescription, RevisionNum, Approved, ApprovedDate, ApprovedBy, EffectiveDate" />
 	</bean>
+	
+	<!-- PartPlant Table Profile -->
+	<bean id="partPlantTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PartPlant" />
+		<property name="exportColumns" value="PartNum, MinimumQty, MaximumQty, SafetyQty, MinOrderQty, LeadTime, MinMfgLotSize, MinAbc, SystemAbc, VendorNum, MfgLotSize, MaxMfgLotSize, MfgLotMultiple, ProcessMRP, GenerateSugg, DaysOfSupply" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_partplant" />
+		<property name="importColumns" value="PartNum, MinimumQty, MaximumQty, SafetyQty, MinOrderQty, LeadTime, MinMfgLotSize, MinAbc, SystemAbc, VendorNum, MfgLotSize, MaxMfgLotSize, MfgLotMultiple, ProcessMRP, GenerateSugg, DaysOfSupply" />
+	</bean>
+	
+	<!-- AprvVend Table Profile -->
+	<bean id="aprvVendTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="AprvVend" />
+		<property name="exportColumns" value="APVType, VendorNum, PartNum, Class, CustNum, OpCode, ManPartNum, Manufacturer" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_aprvvend" />
+		<property name="importColumns" value="APVType, VendorNum, PartNum, Class, CustNum, OpCode, ManPartNum, Manufacturer" />
+	</bean>
+
+	<!-- PlantWhse Table Profile -->
+	<bean id="plantWhseTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PlantWhse" />
+		<property name="exportColumns" value="PartNum, PrimBin" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_plantwhse" />
+		<property name="importColumns" value="PartNum, PrimBin" />
+	</bean>
+
+	<!-- Vendor Table Profile -->
+	<bean id="vendorTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="Vendor" />
+		<property name="exportColumns" value="VendorNum, VendorID, Name, Country" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_vendor" />
+		<property name="importColumns" value="VendorNum, VendorID, Name, Country" />
+	</bean>
+	
+	<!-- Vendor Table Profile -->
+	<bean id="partOprTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PartOpr" />
+		<property name="exportColumns" value="PartNum, RevisionNum, OprSeq, WCCode, OpCode, EstSetHours, EstProdHours, QtyPer" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_partopr" />
+		<property name="importColumns" value="PartNum, RevisionNum, OprSeq, WCCode, OpCode, EstSetHours, EstProdHours, QtyPer" />
+	</bean>
+	
 
 </beans>

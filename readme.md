@@ -8,11 +8,15 @@ A program to export Progress database to MySQL.
 	1. Part
 	2. PartMtl
 	3. PartRev
-	4. PartBin
-	5. PartOpr
+	4. PartPlant
+	5. AprvVend
 	6. PlantWhse
-	7. PartTran?
+	7. Vendor
 	8. WhseBin
+	9. PartBin
+	10. PartOpr
+	11. PartTran?
+	
 	
 - Steps:
 
