@@ -62,7 +62,7 @@ public class TableExportDAO {
 			// Get DB connection
 			conn = (Connection) exportDataSource.getConnection();
 			String exportQuery = profile.getExportQuery();
-			log.info(">>>> Exporting table : " + profile.getExportTableName());			
+			System.out.println("##### Exporting table : " + profile.getExportTableName());			
 			log.debug("SQL: " + exportQuery);
 			Statement s = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs = s.executeQuery(exportQuery);
@@ -70,7 +70,7 @@ public class TableExportDAO {
 			// Get number of records 
 			rs.last();
 			int size = rs.getRow();
-			log.info("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			System.out.println("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 			rs.beforeFirst();			
 
 			// Get result set meta data - for debug perposes
@@ -86,7 +86,7 @@ public class TableExportDAO {
 			// Generate import SQL and write to file
 			data = profile.getImportQuey(meta, rs, size);
 
-			log.info("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			System.out.println("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		}		
 		catch(Exception ex){
 			ex.printStackTrace();			
@@ -114,7 +114,7 @@ public class TableExportDAO {
 		writer.println(data);
 		writer.close();
 
-		log.info("Wrote SQL to file in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+		System.out.println("Wrote SQL to file in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 	}
 
 	/*
@@ -126,7 +126,7 @@ public class TableExportDAO {
 			// Get DB connection
 			conn = (Connection) importDataSource.getConnection();			
 			Statement s = conn.createStatement();
-			log.info(">>>> Importing table : " + profile.getImportTableName());
+			System.out.println("Importing table : " + profile.getImportTableName());
 			// First clean up the table
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
 			
@@ -145,7 +145,7 @@ public class TableExportDAO {
 				s.executeUpdate(query);
 				bar.update();
 			}
-			System.out.println("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			System.out.println("Imported table in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		}		
 		catch(Exception ex){
 			ex.printStackTrace();			
@@ -172,7 +172,7 @@ public class TableExportDAO {
 			conn = (Connection) importDataSource.getConnection();
 			Statement s = conn.createStatement();
              
-		    log.info(">>>> Batch Importing table : " + profile.getImportTableName());
+			System.out.println("Importing table : " + profile.getImportTableName());
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
 			
 			long startTime = System.nanoTime();

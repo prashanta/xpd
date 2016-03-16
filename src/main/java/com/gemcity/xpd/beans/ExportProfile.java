@@ -85,6 +85,7 @@ public class ExportProfile {
 	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size){
 		ArrayList<String> query= new ArrayList<String>();
 		try{
+			System.out.println("Generating import query ... ");
 			int nCols = meta.getColumnCount();
 			ProgressBar bar = new ProgressBar(size);
 			while(rs.next()) {

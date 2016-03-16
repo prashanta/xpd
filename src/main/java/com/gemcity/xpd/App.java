@@ -13,16 +13,22 @@ public class App
     public static void main( String[] args )
     {   
     	// Application expects table names in arguments
+    	
     	if(args.length < 1){    		
     		System.out.println("Usage: xpd [<Table1> <Table2> ...] \n");
-    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant AprvVend, PlantWhse, Vendor, PartOpr");    		
+    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr");
+    		System.out.println("--all : Export all tables");
     	}
     	else{
     		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
     		
     		try {
-	    		
-	    		for(String table : args){
+    			if(args[0].equals("--all")){
+    				
+					args = new String[]{"Part", "PartMtl", "PartRev", "PartPlant", "AprvVend", "PlantWhse", "Vendor", "PartOpr"};    			
+    			}
+    			
+	    		for(String table : args){	    			
 	    			if(table.equals("Part"))
 	    				((TableExportDAO)context.getBean("partTableExportDAO")).run();	    	    		    				
 	    			else if(table.equals("PartMtl"))

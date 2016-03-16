@@ -20,6 +20,7 @@ A program to export Progress database to MySQL.
 	
 - Steps:
 
+0. Check if there are database connections
 1. Query all data from Progress table
 2. Save SQL file in file system
 3. Populate corresponding MySql table
