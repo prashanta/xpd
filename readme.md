@@ -24,3 +24,8 @@ A program to export Progress database to MySQL.
 1. Query all data from Progress table
 2. Save SQL file in file system
 3. Populate corresponding MySql table
+
+## How to Build
+
+To package everything in one neat jar:
+mvn assembly:single 
