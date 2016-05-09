@@ -63,6 +63,12 @@
 		<property name="profile" ref="partOprTableExportProfile" />
 	</bean>
 	
+	<bean id="partBinTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partBinTableExportProfile" />
+	</bean>
+	
 	<!-- DATABASE CONNECTIONS -->
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.progress.sql.jdbc.JdbcProgressDriver" />
@@ -74,8 +80,8 @@
 	<bean id="importDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/radix" />
-		<property name="username" value="root" />
-		<property name="password" value="" />
+		<property name="username" value="xpd" />
+		<property name="password" value="xpd*2016" />
 	</bean>
 	
 	<!-- Part Table Profile -->
@@ -142,13 +148,22 @@
 		<property name="importColumns" value="VendorNum, VendorID, Name, Country" />
 	</bean>
 	
-	<!-- Vendor Table Profile -->
+	<!-- PartOpr Table Profile -->
 	<bean id="partOprTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
 		<property name="exportTableName" value="PartOpr" />
 		<property name="exportColumns" value="PartNum, RevisionNum, OprSeq, WCCode, OpCode, EstSetHours, EstProdHours, QtyPer" />
     	<property name="whereClause" value=""/>
     	<property name="importTableName" value="ev_partopr" />
 		<property name="importColumns" value="PartNum, RevisionNum, OprSeq, WCCode, OpCode, EstSetHours, EstProdHours, QtyPer" />
+	</bean>
+	
+	<!-- PartBin Table Profile -->
+	<bean id="partBinTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PartBin" />
+		<property name="exportColumns" value="PartNum, BinNum, OnhandQty" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_partbin" />
+		<property name="importColumns" value="PartNum, BinNum, OnhandQty" />
 	</bean>
 	
 

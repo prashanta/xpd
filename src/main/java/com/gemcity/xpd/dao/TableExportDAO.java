@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import com.gemcity.xpd.beans.ExportProfile;
 import com.gemcity.xpd.utility.ProgressBar;
-import com.mysql.jdbc.PreparedStatement;
 
 import java.sql.Connection;
 
@@ -44,10 +43,11 @@ public class TableExportDAO {
 	/*
 	 * Run the exporter.
 	 */
-	public void run() throws FileNotFoundException, UnsupportedEncodingException{
+	public void run(boolean fileOnly) throws FileNotFoundException, UnsupportedEncodingException{
 		ArrayList<String> data = export();
 		saveToFile(data);
-		importTableBatch(data);
+		if(!fileOnly)
+			importTableBatch(data);
 	}
 
 	/*
@@ -55,32 +55,43 @@ public class TableExportDAO {
 	 */
 	private ArrayList<String> export(){
 		ArrayList<String> data = new ArrayList<String>();
-
+		
+		
 		Connection conn = null;
 		long startTime = System.nanoTime();
-		try{			
+		try{
+			
+			System.out.println("\n##########################");
+			System.out.println("EXPORTING TABLE : " + profile.getExportTableName());
+			
 			// Get DB connection
 			conn = (Connection) exportDataSource.getConnection();
+			
+			// Get export query
 			String exportQuery = profile.getExportQuery();
-			System.out.println("##### Exporting table : " + profile.getExportTableName());			
 			log.debug("SQL: " + exportQuery);
+
+			// Execute query
 			Statement s = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs = s.executeQuery(exportQuery);
 
 			// Get number of records 
 			rs.last();
 			int size = rs.getRow();
-			System.out.println("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 			rs.beforeFirst();			
+			System.out.println("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 
-			// Get result set meta data - for debug perposes
+			// Get result set meta data - for debug purposes
 			ResultSetMetaData meta = rs.getMetaData();		
 			int NCols = meta.getColumnCount();   // # of attributes in result
+			
+			// START debug stuff
 			log.debug("Name \t\t\t Type \t DispSz \t Scale \t Precis \t ClassName"); 
 			log.debug("-----------------------------------------------");
 			for (int i = 1; i <= NCols; i++)
 				log.debug(meta.getColumnName(i) + "\t\t\t" + meta.getColumnTypeName(i) + "\t" + meta.getColumnDisplaySize(i) + "\t" + meta.getScale(i) + "\t" + meta.getPrecision(i) + "\t" + meta.getColumnClassName(i) + "\t");
-
+			// END debug stuff
+			
 			startTime = System.nanoTime();
 
 			// Generate import SQL and write to file
@@ -108,13 +119,10 @@ public class TableExportDAO {
 	 * Save exported data to a file
 	 */
 	private void saveToFile(ArrayList<String> data) throws FileNotFoundException, UnsupportedEncodingException{
-		long startTime = System.nanoTime();
-
 		PrintWriter writer = new PrintWriter(profile.getExportTableName() + ".sql", "UTF-8");
-		writer.println(data);
+		for(String row : data)
+			writer.println(row);
 		writer.close();
-
-		System.out.println("Wrote SQL to file in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 	}
 
 	/*
@@ -127,21 +135,15 @@ public class TableExportDAO {
 			conn = (Connection) importDataSource.getConnection();			
 			Statement s = conn.createStatement();
 			System.out.println("Importing table : " + profile.getImportTableName());
-			// First clean up the table
-			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
+			
+			// First clean up the table and truncate
+			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1;" +
+					" TRUNCATE TABLE " + profile.getImportTableName() + ";");
 			
 			long startTime = System.nanoTime();
-			String queryPrefix = "INSERT INTO `" + profile.getImportTableName() + "` (";
-			int c = profile.getImportColumns().length - 1;
-			for(String column:profile.getImportColumns()){
-				queryPrefix += "`"+column+"`";
-				queryPrefix += (c > 0)? ", " : "";
-				c--;
-			}
-			queryPrefix += ") VALUES ";
 			ProgressBar bar = new ProgressBar(data.size());
 			for(String row : data){
-				String query = queryPrefix + row;	
+				String query = row;	
 				s.executeUpdate(query);
 				bar.update();
 			}
@@ -170,25 +172,18 @@ public class TableExportDAO {
 		try{	
 			// Get DB connection
 			conn = (Connection) importDataSource.getConnection();
-			Statement s = conn.createStatement();
-             
-			System.out.println("Importing table : " + profile.getImportTableName());
+			Statement s = conn.createStatement();             
+			System.out.println("Populating table : " + profile.getImportTableName());
+			
+			// First clean up the table and truncate
 			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
+			s.executeUpdate("TRUNCATE TABLE " + profile.getImportTableName());
 			
 			long startTime = System.nanoTime();
-			String queryPrefix = "INSERT INTO `" + profile.getImportTableName() + "` ("; 
-			int c = profile.getImportColumns().length - 1;
-			for(String column:profile.getImportColumns()){
-				queryPrefix += "`"+column+"`";
-				queryPrefix += (c > 0)? ", " : "";
-				c--;
-			}
-			queryPrefix += ") VALUES ";
 			ProgressBar bar = new ProgressBar(data.size());
 			int i=0;
 			for(String row : data){
-				String query = queryPrefix + row;
-				s.addBatch(query);
+				s.addBatch(row);
                 if(i%100 ==0) {
                 	s.executeBatch();
                 	bar.update(i);
@@ -197,7 +192,7 @@ public class TableExportDAO {
 			}	
 			s.executeBatch();
 			bar.update(i);
-			System.out.println("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			System.out.println("Imported in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		}		
 		catch(Exception ex){
 			ex.printStackTrace();			

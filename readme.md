@@ -5,18 +5,15 @@ A program to export Progress database to MySQL.
 - Queries tables - saves results as SQL file and populates secondary database
 
 - List of tables to backup:
-	1. Part
-	2. PartMtl
-	3. PartRev
-	4. PartPlant
-	5. AprvVend
-	6. PlantWhse
-	7. Vendor
-	8. WhseBin
-	9. PartBin
-	10. PartOpr
-	11. PartTran?
-	
+	1. AprvVend
+	2. Part
+	3. PartBin
+	4. PartMtl
+	5. PartOpr
+	6. PartPlant
+	7. PartRev
+	8. PlantWhse
+	9. Vendor
 	
 - Steps:
 
@@ -27,5 +24,13 @@ A program to export Progress database to MySQL.
 
 ## How to Build
 
-To package everything in one neat jar:
-mvn assembly:single 
+To package everything in one neat jar file:
+
+_mvn assembly:single_ 
+
+
+Usage: xpd [<Table1> <Table2> ...] 
+
+where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin
+--all : Export all tables
+--file-only : Save to SQL file only

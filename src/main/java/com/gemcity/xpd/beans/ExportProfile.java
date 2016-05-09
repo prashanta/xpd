@@ -71,40 +71,52 @@ public class ExportProfile {
 	}
 
 	public String getExportQuery(){
-		String query  = "SELECT ";
-		int c = exportColumns.length-1;		
+		String query  = "";
+		int c = exportColumns.length - 1;		
 		for(String column:exportColumns){	
-			query +=  exportTableName+ "." + column;
-			query += (c > 0)? ", " : "";
+			query +=  exportTableName+ "." + column + ((c > 0)? ", " : "");
 			c--;
 		}
-		query += " FROM pub." + exportTableName + " " + whereClause;	
+		query = "SELECT " + query + " FROM pub." + exportTableName + " " + whereClause;
 		return query;
 	}
 
 	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size){
 		ArrayList<String> query= new ArrayList<String>();
 		try{
-			System.out.println("Generating import query ... ");
-			int nCols = meta.getColumnCount();
+			System.out.println("Generating import query: ");
+			
+			String queryPrefix = "INSERT INTO `" + this.getImportTableName() + "` (";
+			int b = this.getImportColumns().length - 1;
+			for(String column:this.getImportColumns()){
+				queryPrefix += "`"+column+"`" + (b > 0? ", " : "");
+				b--;
+			}
+			
+			int nCols = meta.getColumnCount();			
 			ProgressBar bar = new ProgressBar(size);
 			while(rs.next()) {
 				int c = importColumns.length - 1;
 				String value = "(";
 				for(int i=1; i <= nCols; i++){	
-					String colType = meta.getColumnClassName(i); 
+					String colType = meta.getColumnClassName(i);
+					// String
 					if(colType == "java.lang.String"){
 						String val = rs.getString(i);
 						value += val!=null? ("'" + ExportUtil.cleanString(rs.getString(i)) + "'") : "''";
-					}						
+					}		
+					// Integer
 					else if(colType == "java.lang.Integer")
 						value += rs.getInt(i);
+					// Decimal
 					else if(colType == "java.math.BigDecimal")
 						value += rs.getDouble(i);
+					// Date
 					else if(colType == "java.sql.Date"){
 						Date temp = rs.getDate(i);
 						value += temp != null? ("'" + temp.toString() + "'") : "null";
 					}
+					// Boolean
 					else if(colType == "java.lang.Boolean")
 						value += "" + rs.getBoolean(i);
 					else{
@@ -113,7 +125,7 @@ public class ExportProfile {
 					value += (c > 0)? ", " : "";
 					c--;				
 				}					
-				query.add(value + ");");
+				query.add(queryPrefix + ") VALUES" + value + ");");
 				bar.update();
 			}			
 		}
