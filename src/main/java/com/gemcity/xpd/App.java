@@ -18,21 +18,21 @@ public class App
     	
     	if(args.length < 1){    		
     		System.out.println("Usage: xpd [<Table1> <Table2> ...] \n");
-    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin");
+    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, POHeader, PODetail");
     		System.out.println("--all : Export all tables");
-    		System.out.println("--file-only : Save to SQL file only");
+    		System.out.println("--file-only : Save to SQL file only, skip database import");
     	}
     	else{
     		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
     		boolean all = false;
-    		boolean fileOnly = false;   
+    		boolean isFileOnly = false;   
     		ArrayList<String> tables = new ArrayList<String>();
     		try {    			
     			for(String arg : args){
     				if(arg.equals("--all"))
     					all = true;
     				if(arg.equals("--file-only"))
-    					fileOnly = true;
+    					isFileOnly = true;
     				else
     					tables.add(arg);
     			}
@@ -48,31 +48,37 @@ public class App
     				tables.add("Vendor");
     				tables.add("PartOpr");
     				tables.add("PartBin");    				
+    				tables.add("POHeader");    				
+    				tables.add("PODetail");    				
     			}
     			long startTime = System.nanoTime();
 	    		for(String table : tables){	    			
 	    			if(table.equals("Part"))
-	    				((TableExportDAO)context.getBean("partTableExportDAO")).run(fileOnly);	    	    		    				
+	    				((TableExportDAO)context.getBean("partTableExportDAO")).run(isFileOnly);	    	    		    				
 	    			else if(table.equals("PartMtl"))
-	    				((TableExportDAO)context.getBean("partMtlTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("partMtlTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PartRev"))
-	    				((TableExportDAO)context.getBean("partRevTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("partRevTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PartPlant"))
-	    				((TableExportDAO)context.getBean("partPlantTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("partPlantTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("AprvVend"))
-	    				((TableExportDAO)context.getBean("aprvVendTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("aprvVendTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PlantWhse"))
-	    				((TableExportDAO)context.getBean("plantWhseTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("plantWhseTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("Vendor"))
-	    				((TableExportDAO)context.getBean("vendorTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("vendorTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("Vendor"))
-	    				((TableExportDAO)context.getBean("vendorTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("vendorTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PartOpr"))
-	    				((TableExportDAO)context.getBean("partOprTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("partOprTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PartBin"))
-	    				((TableExportDAO)context.getBean("partBinTableExportDAO")).run(fileOnly);
+	    				((TableExportDAO)context.getBean("partBinTableExportDAO")).run(isFileOnly);
+	    			else if(table.equals("POHeader"))
+	    				((TableExportDAO)context.getBean("POHeaderTableExportDAO")).run(isFileOnly);
+	    			else if(table.equals("PODetail"))
+	    				((TableExportDAO)context.getBean("PODetailTableExportDAO")).run(isFileOnly);
 	    			else{
-	    				System.out.println("ERROR - TABLE NOT FOUND : " + table);
+	    				System.out.println("ERROR - INVALID TABLE NAME : " + table);
 	    				break;
 	    			}	    				
 	    		}

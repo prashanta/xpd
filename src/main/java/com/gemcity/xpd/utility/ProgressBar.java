@@ -3,11 +3,13 @@ package com.gemcity.xpd.utility;
 public class ProgressBar {
 	
 	public int total;
+	public String title;
 	public int current;
 	private int size = 50;
 	private int pct = 0;
 	
-	public ProgressBar(int total){
+	public ProgressBar(String title, int total){
+		this.title = title;
 		this.total = total;
 		this.current = 0;
 	}
@@ -27,21 +29,22 @@ public class ProgressBar {
 			while(x-- > 0)
 				bar += "=";
 			bar = String.format("%1$-"+this.size+"s", bar);
-			
-			System.out.print("[" + bar + "] " + ((this.current * 100) / this.total) + "% \r");
+			String str = title + ": [" + bar + "] " + ((this.current * 100) / this.total) + "% \r";
+			System.out.print(str);
 			if(this.current == this.total){
 				System.out.flush();
-				System.out.println();
+				String space = "";
+				for(int i=0; i< str.length(); i++)
+					space += " ";				
+				System.out.print(space+"\r");
 			}
-		}
-		
-		
+		}		
 	}
 	
 	public static void main(String[] args){
 		
 		try {
-			ProgressBar p = new ProgressBar(500);
+			ProgressBar p = new ProgressBar("Doing something", 500);
 			for(int i=0; i< 100; i++){
 				Thread.sleep(500);                 //1000 milliseconds is one second.
 				p.update();

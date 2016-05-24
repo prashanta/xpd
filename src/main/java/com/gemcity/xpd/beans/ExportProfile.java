@@ -84,8 +84,6 @@ public class ExportProfile {
 	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size){
 		ArrayList<String> query= new ArrayList<String>();
 		try{
-			System.out.println("Generating import query: ");
-			
 			String queryPrefix = "INSERT INTO `" + this.getImportTableName() + "` (";
 			int b = this.getImportColumns().length - 1;
 			for(String column:this.getImportColumns()){
@@ -94,7 +92,7 @@ public class ExportProfile {
 			}
 			
 			int nCols = meta.getColumnCount();			
-			ProgressBar bar = new ProgressBar(size);
+			ProgressBar bar = new ProgressBar("Generating import query", size);
 			while(rs.next()) {
 				int c = importColumns.length - 1;
 				String value = "(";

@@ -3,13 +3,9 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/tx
-        http://www.springframework.org/schema/tx/spring-tx.xsd">
+	xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
                 
 	<bean id="helloBean" class="com.gemcity.xpd.beans.Test">
 		<property name="name" value="Mr.Robot" />
@@ -67,6 +63,18 @@
 		<property name="exportDataSource" ref="exportDataSource" />
 		<property name="importDataSource" ref="importDataSource" />
 		<property name="profile" ref="partBinTableExportProfile" />
+	</bean>
+	
+	<bean id="POHeaderTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="POHeaderTableExportProfile" />
+	</bean>
+	
+	<bean id="PODetailTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="PODetailTableExportProfile" />
 	</bean>
 	
 	<!-- DATABASE CONNECTIONS -->
@@ -166,5 +174,22 @@
 		<property name="importColumns" value="PartNum, BinNum, OnhandQty" />
 	</bean>
 	
+	<!-- POHeader Table Profile -->
+	<bean id="POHeaderTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="POHeader" />
+		<property name="exportColumns" value="EntryPerson, OrderDate, PONum, ShipCountry, CommentText, VendorNum, ShipName, ShipViaCode, OpenOrder, ShipAddress1, ShipAddress2, ExchangeRate, ApprovalStatus" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_poheader" />
+		<property name="importColumns" value="EntryPerson, OrderDate, PONum, ShipCountry, CommentText, VendorNum, ShipName, ShipViaCode, OpenOrder, ShipAddress1, ShipAddress2, ExchangeRate, ApprovalStatus" />
+	</bean>
 
+	<!-- PODetail Table Profile -->
+	<bean id="PODetailTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+		<property name="exportTableName" value="PODetail" />
+		<property name="exportColumns" value="VoidLine, PONUM, OrderQty, IUM, OpenLine, POLine, UnitCost, LineDesc, PartNum, Class, RevisionNum, VendorNum, Confirmed, ConfirmDate" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_podetail" />
+		<property name="importColumns" value="VoidLine, PONUM, OrderQty, IUM, OpenLine, POLine, UnitCost, LineDesc, PartNum, Class, RevisionNum, VendorNum, Confirmed, ConfirmDate" />
+	</bean>
+	
 </beans>
