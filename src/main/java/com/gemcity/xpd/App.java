@@ -18,7 +18,7 @@ public class App
     	
     	if(args.length < 1){    		
     		System.out.println("Usage: xpd [<Table1> <Table2> ...] \n");
-    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, POHeader, PODetail");
+    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail");
     		System.out.println("--all : Export all tables");
     		System.out.println("--file-only : Save to SQL file only, skip database import");
     	}
@@ -48,6 +48,7 @@ public class App
     				tables.add("Vendor");
     				tables.add("PartOpr");
     				tables.add("PartBin");    				
+    				tables.add("PartDtl");    				
     				tables.add("POHeader");    				
     				tables.add("PODetail");    				
     			}
@@ -73,10 +74,14 @@ public class App
 	    				((TableExportDAO)context.getBean("partOprTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("PartBin"))
 	    				((TableExportDAO)context.getBean("partBinTableExportDAO")).run(isFileOnly);
+	    			else if(table.equals("PartDtl"))
+	    				((TableExportDAO)context.getBean("partDtlTableExportDAO")).run(isFileOnly);
 	    			else if(table.equals("POHeader"))
 	    				((TableExportDAO)context.getBean("POHeaderTableExportDAO")).run(isFileOnly);
-	    			else if(table.equals("PODetail"))
-	    				((TableExportDAO)context.getBean("PODetailTableExportDAO")).run(isFileOnly);
+	    			else if(table.equals("PODetail")){
+	    				TableExportDAO t = ((TableExportDAO)context.getBean("PODetailTableExportDAO"));
+	    				t.run(isFileOnly);
+	    			}
 	    			else{
 	    				System.out.println("ERROR - INVALID TABLE NAME : " + table);
 	    				break;

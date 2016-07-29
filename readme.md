@@ -7,14 +7,15 @@ A program to export Progress database to MySQL.
 1. AprvVend
 2. Part
 3. PartBin
-4. PartMtl
-5. PartOpr
-6. PartPlant
-7. PartRev
-8. PlantWhse
-9. PODetail
-10. POHeader
-11. Vendor
+4. PartDtl
+5. PartMtl
+6. PartOpr
+7. PartPlant
+8. PartRev
+9. PlantWhse
+10. PODetail
+11. POHeader
+12. Vendor
 	
 ### Backup Algorithm: ###
 
@@ -36,7 +37,7 @@ _mvn clean compile package_
 
 <Table> is: 
 
-Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, POHeader, PODetail
+Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail
 
 <options> is:
 

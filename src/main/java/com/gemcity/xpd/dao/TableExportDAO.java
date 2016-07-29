@@ -46,10 +46,19 @@ public class TableExportDAO {
 	 * Run the exporter.
 	 */
 	public void run(boolean isFileOnly) throws FileNotFoundException, UnsupportedEncodingException{
-		ArrayList<String> data = export();
-		saveToFile(data);
-		if(!isFileOnly)
-			importTableBatch(data);
+		if(profile.getReferenceTableName() != null){
+			// Get reference keys from reference table
+			// Generate export queries 
+			// Export Table
+			// Save File
+			// Import Table
+		}
+		else{
+			ArrayList<String> data = export();
+			saveToFile(data);
+			if(!isFileOnly)
+				importTableBatch(data);
+		}
 	}
 
 	/*
@@ -123,43 +132,6 @@ public class TableExportDAO {
 		writer.close();
 	}
 
-	/*
-	 * Import data to MySQL database
-	 */
-	private void importTable(ArrayList<String> data){
-		Connection conn = null;
-		try{			
-			// Get DB connection
-			conn = (Connection) importDataSource.getConnection();			
-			Statement s = conn.createStatement();
-			
-			// First clean up the table and truncate
-			s.executeUpdate("DELETE FROM `"+ profile.getImportTableName() + "` WHERE 1");
-			s.executeUpdate("TRUNCATE TABLE " + profile.getImportTableName());
-			
-			long startTime = System.nanoTime();
-			ProgressBar bar = new ProgressBar("Importing table " + profile.getImportTableName(), data.size());
-			for(String row : data){
-				String query = row;	
-				s.executeUpdate(query);
-				bar.update();
-			}
-			log.info("Imported table in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
-		}		
-		catch(Exception ex){
-			ex.printStackTrace();			
-		}	
-		finally {
-			if (conn != null) {
-				try {
-					conn.close();					
-				} 
-				catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-	}
 	
 	/*
 	 * Bulk import data to MySQL database
@@ -215,32 +187,4 @@ public class TableExportDAO {
 			}
 		}
 	}
-	
-	/*private void checkImportTable(){
-		Connection conn = null;
-		try{			
-			// Get DB connection
-			conn = (Connection) importDataSource.getConnection();
-			Statement s = conn.createStatement();
-			ResultSet rs = s.executeQuery("SHOW TABLES LIKE '"+ profile.getImportTableName() +"'");
-			if(rs.next()){
-				log.info("Table exists!");
-			}
-			else 
-				log.error("No table found");					
-		}		
-		catch(Exception ex){
-			ex.printStackTrace();			
-		}	
-		finally {
-			if (conn != null) {
-				try {
-					conn.close();					
-				} 
-				catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-	}*/
 }

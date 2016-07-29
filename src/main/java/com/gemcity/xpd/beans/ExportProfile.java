@@ -18,10 +18,14 @@ public class ExportProfile {
 	private String exportTableName;
 	private String exportColumns[];	
 	private String whereClause;
+	
 
 	private String importTableName;
 	private String importColumns[];	
 	
+	private String referenceTableName;
+	private String referenceColumnName;
+
 	public void init() throws Exception{
 		if(exportColumns.length != importColumns.length)
 			throw new Exception("xpd: Export and Import columns are not equal for ExportProfile with export table name: " + getExportTableName());
@@ -68,6 +72,23 @@ public class ExportProfile {
 
 	public void setImportColumns(String[] importColumns) {
 		this.importColumns = importColumns;
+	}
+	
+
+	public String getReferenceTableName() {
+		return referenceTableName;
+	}
+
+	public void setReferenceTableName(String referenceTableName) {
+		this.referenceTableName = referenceTableName;
+	}
+
+	public String getReferenceColumnName() {
+		return referenceColumnName;
+	}
+
+	public void setReferenceColumnName(String referenceColumnName) {
+		this.referenceColumnName = referenceColumnName;
 	}
 
 	public String getExportQuery(){

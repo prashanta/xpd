@@ -65,6 +65,12 @@
 		<property name="profile" ref="partBinTableExportProfile" />
 	</bean>
 	
+	<bean id="partDtlTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="partDtlTableExportProfile" />
+	</bean>
+	
 	<bean id="POHeaderTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
 		<property name="exportDataSource" ref="exportDataSource" />
 		<property name="importDataSource" ref="importDataSource" />
@@ -88,8 +94,12 @@
 	<bean id="importDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/radix" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+		<!-- 
 		<property name="username" value="xpd" />
-		<property name="password" value="xpd*2016" />
+		<property name="password" value="xpd*2016" /> 
+		-->
 	</bean>
 	
 	<!-- Part Table Profile -->
@@ -103,7 +113,7 @@
 	</bean>
 	
 	<!-- PartMtl Table Profile -->
-	<bean id="partMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PartMtl" />
 		<property name="exportColumns" value="PartNum, RevisionNum, MtlSeq, QtyPer, MtlPartNum, BubbleNum, FixedQty, MfgComment, PurComment, PullAsAsm, ViewAsAsm" />
     	<property name="whereClause" value=""/>
@@ -112,7 +122,7 @@
 	</bean>
 	
 	<!-- PartRev Table Profile -->
-	<bean id="partRevTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partRevTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PartRev" />
 		<property name="exportColumns" value="PartNum, RevDescription, RevisionNum, Approved, ApprovedDate, ApprovedBy, EffectiveDate" />
     	<property name="whereClause" value=""/>
@@ -121,7 +131,7 @@
 	</bean>
 	
 	<!-- PartPlant Table Profile -->
-	<bean id="partPlantTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partPlantTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PartPlant" />
 		<property name="exportColumns" value="PartNum, MinimumQty, MaximumQty, SafetyQty, MinOrderQty, LeadTime, MinMfgLotSize, MinAbc, SystemAbc, VendorNum, MfgLotSize, MaxMfgLotSize, MfgLotMultiple, ProcessMRP, GenerateSugg, DaysOfSupply" />
     	<property name="whereClause" value=""/>
@@ -130,7 +140,7 @@
 	</bean>
 	
 	<!-- AprvVend Table Profile -->
-	<bean id="aprvVendTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="aprvVendTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="AprvVend" />
 		<property name="exportColumns" value="APVType, VendorNum, PartNum, Class, CustNum, OpCode, ManPartNum, Manufacturer" />
     	<property name="whereClause" value=""/>
@@ -139,7 +149,7 @@
 	</bean>
 
 	<!-- PlantWhse Table Profile -->
-	<bean id="plantWhseTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="plantWhseTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PlantWhse" />
 		<property name="exportColumns" value="PartNum, PrimBin" />
     	<property name="whereClause" value=""/>
@@ -148,7 +158,7 @@
 	</bean>
 
 	<!-- Vendor Table Profile -->
-	<bean id="vendorTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="vendorTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="Vendor" />
 		<property name="exportColumns" value="VendorNum, VendorID, Name, Country" />
     	<property name="whereClause" value=""/>
@@ -157,7 +167,7 @@
 	</bean>
 	
 	<!-- PartOpr Table Profile -->
-	<bean id="partOprTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partOprTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PartOpr" />
 		<property name="exportColumns" value="PartNum, RevisionNum, OprSeq, WCCode, OpCode, EstSetHours, EstProdHours, QtyPer" />
     	<property name="whereClause" value=""/>
@@ -166,7 +176,7 @@
 	</bean>
 	
 	<!-- PartBin Table Profile -->
-	<bean id="partBinTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="partBinTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="PartBin" />
 		<property name="exportColumns" value="PartNum, BinNum, OnhandQty" />
     	<property name="whereClause" value=""/>
@@ -174,8 +184,17 @@
 		<property name="importColumns" value="PartNum, BinNum, OnhandQty" />
 	</bean>
 	
+	<!-- PartDtl Table Profile -->
+	<bean id="partDtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
+		<property name="exportTableName" value="PartDtl" />
+		<property name="exportColumns" value="PartNum, RevisionNum, PartDescription, RequirementFlag, DueDate, Quantity, IUM, JobNum, AssemblySeq, JobSeq, OrderNum, OrderLine, PONum, POLine, SourceFile" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_partdtl" />
+		<property name="importColumns" value="PartNum, RevisionNum, PartDescription, RequirementFlag, DueDate, Quantity, IUM, JobNum, AssemblySeq, JobSeq, OrderNum, OrderLine, PONum, POLine, SourceFile" />
+	</bean>
+	
 	<!-- POHeader Table Profile -->
-	<bean id="POHeaderTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="POHeaderTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
 		<property name="exportTableName" value="POHeader" />
 		<property name="exportColumns" value="EntryPerson, OrderDate, PONum, ShipCountry, CommentText, VendorNum, ShipName, ShipViaCode, OpenOrder, ShipAddress1, ShipAddress2, ExchangeRate, ApprovalStatus" />
     	<property name="whereClause" value=""/>
@@ -184,7 +203,7 @@
 	</bean>
 
 	<!-- PODetail Table Profile -->
-	<bean id="PODetailTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile">
+	<bean id="PODetailTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
 		<property name="exportTableName" value="PODetail" />
 		<property name="exportColumns" value="VoidLine, PONUM, OrderQty, IUM, OpenLine, POLine, UnitCost, LineDesc, PartNum, Class, RevisionNum, VendorNum, Confirmed, ConfirmDate" />
     	<property name="whereClause" value=""/>
