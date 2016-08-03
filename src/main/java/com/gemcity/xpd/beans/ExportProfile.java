@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.gemcity.xpd.dao.TableExportDAO;
 import com.gemcity.xpd.utility.ExportUtil;
 import com.gemcity.xpd.utility.ProgressBar;
 

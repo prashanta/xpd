@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
@@ -83,6 +85,12 @@
 		<property name="profile" ref="PODetailTableExportProfile" />
 	</bean>
 	
+	<bean id="jobHeadTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="jobHeadTableExportProfile" />
+	</bean>
+	
 	<!-- DATABASE CONNECTIONS -->
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.progress.sql.jdbc.JdbcProgressDriver" />
@@ -94,12 +102,14 @@
 	<bean id="importDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/radix" />
+		
+		<!-- 
 		<property name="username" value="root" />
 		<property name="password" value="root" />
-		<!-- 
+		-->
+		
 		<property name="username" value="xpd" />
 		<property name="password" value="xpd*2016" /> 
-		-->
 	</bean>
 	
 	<!-- Part Table Profile -->
@@ -209,6 +219,15 @@
     	<property name="whereClause" value=""/>
     	<property name="importTableName" value="ev_podetail" />
 		<property name="importColumns" value="VoidLine, PONUM, OrderQty, IUM, OpenLine, POLine, UnitCost, LineDesc, PartNum, Class, RevisionNum, VendorNum, Confirmed, ConfirmDate" />
+	</bean>
+	
+	<!-- JobHead Table Profile -->
+	<bean id="jobHeadTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
+		<property name="exportTableName" value="JobHead" />
+		<property name="exportColumns" value="JobNum, PartNum, PartDescription, ProdQty, IUM, StartDate, ReqDueDate, JobClosed, ClosedDate, JobComplete, JobReleased, JobCompletionDate, DueDate, ProjectID, JobFirm" />
+    	<property name="whereClause" value=""/>
+    	<property name="importTableName" value="ev_jobhead" />
+		<property name="importColumns" value="JobNum, PartNum, PartDescription, ProdQty, IUM, StartDate, ReqDueDate, JobClosed, ClosedDate, JobComplete, JobReleased, JobCompletionDate, DueDate, ProjectID, JobFirm" />
 	</bean>
 	
 </beans>

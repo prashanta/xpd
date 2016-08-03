@@ -16,6 +16,7 @@ A program to export Progress database to MySQL.
 10. PODetail
 11. POHeader
 12. Vendor
+13. JobHead
 	
 ### Backup Algorithm: ###
 
@@ -37,7 +38,7 @@ _mvn clean compile package_
 
 <Table> is: 
 
-Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail
+Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail, JobHead
 
 <options> is:
 
