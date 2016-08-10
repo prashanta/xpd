@@ -91,6 +91,12 @@
 		<property name="profile" ref="jobHeadTableExportProfile" />
 	</bean>
 	
+	<bean id="rcvDtlTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="rcvDtlTableExportProfile" />
+	</bean>
+	
 	<!-- DATABASE CONNECTIONS -->
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.progress.sql.jdbc.JdbcProgressDriver" />
@@ -228,6 +234,15 @@
     	<property name="whereClause" value=""/>
     	<property name="importTableName" value="ev_jobhead" />
 		<property name="importColumns" value="JobNum, PartNum, PartDescription, ProdQty, IUM, StartDate, ReqDueDate, JobClosed, ClosedDate, JobComplete, JobReleased, JobCompletionDate, DueDate, ProjectID, JobFirm" />
+	</bean>
+	
+	<!-- RcvDtl Table Profile -->
+	<bean id="rcvDtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
+		<property name="exportTableName" value="RcvDtl" />
+		<property name="exportColumns" value="PackSlip, PartNum, BinNum, ReceivedComplete, PONum, VendorQty, ReceivedTo, InspectionReq, InspectionPending, ReceiptDate" />
+    	<property name="whereClause" value=" WHERE RcvDtl.InspectionPending = 1 "/>
+    	<property name="importTableName" value="ev_rcvdtl" />
+		<property name="importColumns" value="PackSlip, PartNum, BinNum, ReceivedComplete, PONum, VendorQty, ReceivedTo, InspectionReq, InspectionPending, ReceiptDate" />
 	</bean>
 	
 </beans>
