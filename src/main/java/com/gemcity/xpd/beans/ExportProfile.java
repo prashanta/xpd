@@ -22,6 +22,7 @@ public class ExportProfile {
 	private String importTableName;
 	private String importColumns[];	
 	
+	// In future, use this to pull table data based on other reference data. Eg. Pull JobDtl for jobs that are in already exported JobHead table.
 	private String referenceTableName;
 	private String referenceColumnName;
 
@@ -101,7 +102,7 @@ public class ExportProfile {
 		return query;
 	}
 
-	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size){
+	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size, boolean isSilentMode){
 		ArrayList<String> query= new ArrayList<String>();
 		try{
 			String queryPrefix = "INSERT INTO `" + this.getImportTableName() + "` (";
@@ -144,7 +145,8 @@ public class ExportProfile {
 					c--;				
 				}					
 				query.add(queryPrefix + ") VALUES" + value + ");");
-				bar.update();
+				if(!isSilentMode)
+					bar.update();
 			}			
 		}
 		catch(Exception e){

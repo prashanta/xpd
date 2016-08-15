@@ -45,26 +45,23 @@ public class TableExportDAO {
 	/*
 	 * Run the exporter.
 	 */
-	public void run(boolean isFileOnly) throws FileNotFoundException, UnsupportedEncodingException{
-		if(profile.getReferenceTableName() != null){
-			// Get reference keys from reference table
-			// Generate export queries 
-			// Export Table
-			// Save File
-			// Import Table
+	public void run(boolean isFileOnly, boolean isSilentMode, String dir) throws FileNotFoundException, UnsupportedEncodingException{
+		ArrayList<String> data = export(isSilentMode);
+		if(data.size()>0){
+			saveToFile(data, dir);
+			if(!isFileOnly)
+				importTableBatch(data, isSilentMode);
+			log.info("Completed importing : " + this.profile.getExportTableName());
 		}
 		else{
-			ArrayList<String> data = export();
-			saveToFile(data);
-			if(!isFileOnly)
-				importTableBatch(data);
-		}
+			log.error("No data retrived for table : " + this.profile.getExportTableName());
+		}	
 	}
 
 	/*
 	 * Get export data from Progress database.
 	 */
-	private ArrayList<String> export(){
+	private ArrayList<String> export(boolean isSilentMode){
 		
 		ArrayList<String> data = new ArrayList<String>();
 		
@@ -72,14 +69,16 @@ public class TableExportDAO {
 		long startTime = System.nanoTime();
 		try{
 			
-			System.out.println("\n##########################");
-			log.info("Exporting table - " + profile.getExportTableName());
+			if(!isSilentMode){
+				System.out.println("\n-----------------------------------------");
+				log.info("Exporting table - " + profile.getExportTableName());
+			}
 			
 			// Get DB connection
 			conn = (Connection) exportDataSource.getConnection();
 			
 			// Get export query
-			String exportQuery = profile.getExportQuery();
+			String exportQuery = profile.getExportQuery();			
 			log.debug("SQL: " + exportQuery);
 
 			// Execute query
@@ -89,8 +88,9 @@ public class TableExportDAO {
 			// Get number of records 
 			rs.last();
 			int size = rs.getRow();
-			rs.beforeFirst();			
-			log.info("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			rs.beforeFirst();
+			if(!isSilentMode)
+				log.info("Retrived ["+ size +"] records in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 
 			// Get result set meta data - for debug purposes
 			ResultSetMetaData meta = rs.getMetaData();
@@ -101,9 +101,10 @@ public class TableExportDAO {
 			startTime = System.nanoTime();
 
 			// Generate import SQL and write to file
-			data = profile.getImportQuey(meta, rs, size);
-
-			log.info("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			data = profile.getImportQuey(meta, rs, size, isSilentMode);
+			
+			if(!isSilentMode)
+				log.info("Generated import query in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
 		
 		}		
 		catch(Exception ex){
@@ -125,8 +126,9 @@ public class TableExportDAO {
 	/*
 	 * Save exported data to a file
 	 */
-	private void saveToFile(ArrayList<String> data) throws FileNotFoundException, UnsupportedEncodingException{
-		PrintWriter writer = new PrintWriter(profile.getExportTableName() + ".sql", "UTF-8");
+	private void saveToFile(ArrayList<String> data, String dir) throws FileNotFoundException, UnsupportedEncodingException{
+		String path = dir==null? "" : dir + "\\"; 
+		PrintWriter writer = new PrintWriter(path + profile.getExportTableName() + ".sql", "UTF-8");
 		for(String row : data)
 			writer.println(row);
 		writer.close();
@@ -136,7 +138,7 @@ public class TableExportDAO {
 	/*
 	 * Bulk import data to MySQL database
 	 */
-	private void importTableBatch(ArrayList<String> data){
+	private void importTableBatch(ArrayList<String> data, boolean isSilentMode){
 		Connection conn = null;
 		try{	
 			// Get DB connection
@@ -160,7 +162,8 @@ public class TableExportDAO {
 				s.addBatch(row);
                 if(i%100 ==0) {
                 	s.executeBatch();
-                	bar.update(i);
+                	if(!isSilentMode)
+                		bar.update(i);
                 }
                 i++;
 			}			
@@ -170,8 +173,10 @@ public class TableExportDAO {
 			s.executeUpdate("SET UNIQUE_CHECKS = 1");
 			s.executeUpdate("SET AUTOCOMMIT = 1;");
 			
-			bar.update(i);
-			log.info("Imported in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			if(!isSilentMode){
+				bar.update(i);
+				log.info("Imported in : "+ (System.nanoTime() - startTime)/1000000000 + " sec");
+			}
 		}		
 		catch(Exception ex){
 			ex.printStackTrace();			
