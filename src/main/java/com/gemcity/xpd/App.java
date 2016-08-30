@@ -18,7 +18,7 @@ public class App
     	
     	if(args.length < 1){    		
     		System.out.println("Usage: xpd [<Table1> <Table2> ...] \n");
-    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail, JobHead, RcvDtl");
+    		System.out.println("where <Table*> is: Part, PartMtl, PartRev, PartPlant, AprvVend, PlantWhse, Vendor, PartOpr, PartBin, PartDtl, POHeader, PODetail, JobHead, RcvDtl, JobMtl, JobAsmbl");
     		System.out.println("--all : Export all tables");
     		System.out.println("--output <dir>: Directory to put output sql files.");
     		System.out.println("--silent : Silent mode");
@@ -70,6 +70,8 @@ public class App
     				tables.add("PODetail");    				
     				tables.add("JobHead");    				
     				tables.add("RcvDtl");    				
+    				tables.add("JobMtl");    				
+    				tables.add("JobAsmbl");    				
     			}
     			long startTime = System.nanoTime();
 	    		for(String table : tables){	    			
@@ -103,6 +105,10 @@ public class App
 	    				((TableExportDAO)context.getBean("jobHeadTableExportDAO")).run(isFileOnly, isSilentMode, dir);	    			
 	    			else if(table.equals("RcvDtl"))
 	    				((TableExportDAO)context.getBean("rcvDtlTableExportDAO")).run(isFileOnly, isSilentMode, dir);	    			
+	    			else if(table.equals("JobMtl"))
+	    				((TableExportDAO)context.getBean("jobMtlTableExportDAO")).run(isFileOnly, isSilentMode, dir);	    			
+	    			else if(table.equals("JobAsmbl"))
+	    				((TableExportDAO)context.getBean("jobAsmblTableExportDAO")).run(isFileOnly, isSilentMode, dir);	    			
 	    			else{
 	    				if(!isSilentMode)
 	    					System.out.println("ERROR - INVALID TABLE NAME : " + table);

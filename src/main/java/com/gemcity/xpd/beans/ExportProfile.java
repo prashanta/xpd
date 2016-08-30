@@ -16,6 +16,7 @@ public class ExportProfile {
 	
 	private String exportTableName;
 	private String exportColumns[];	
+	private String exportSql;
 	private String whereClause;
 	
 
@@ -27,8 +28,10 @@ public class ExportProfile {
 	private String referenceColumnName;
 
 	public void init() throws Exception{
-		if(exportColumns.length != importColumns.length)
-			throw new Exception("xpd: Export and Import columns are not equal for ExportProfile with export table name: " + getExportTableName());
+		if(exportSql==null){
+			if(exportColumns.length != importColumns.length)
+				throw new Exception("xpd: Export and Import columns are not equal for ExportProfile with export table name: " + getExportTableName());
+		}
 	}
 
 	public String getExportTableName() {
@@ -45,6 +48,14 @@ public class ExportProfile {
 
 	public void setExportColumns(String[] exportColumns) {
 		this.exportColumns = exportColumns;
+	}
+
+	public String getExportSql() {
+		return exportSql;
+	}
+
+	public void setExportSql(String exportSql) {
+		this.exportSql = exportSql;
 	}
 
 	public String getWhereClause() {
@@ -92,14 +103,22 @@ public class ExportProfile {
 	}
 
 	public String getExportQuery(){
-		String query  = "";
-		int c = exportColumns.length - 1;		
-		for(String column:exportColumns){	
-			query +=  exportTableName+ "." + column + ((c > 0)? ", " : "");
-			c--;
+		if(exportColumns != null){
+			String query  = "";	
+			int c = exportColumns.length - 1;		
+			for(String column:exportColumns){	
+				query +=  exportTableName+ "." + column + ((c > 0)? ", " : "");
+				c--;
+			}
+			query = "SELECT " + query + " FROM pub." + exportTableName + " " + whereClause;
+			return query;
 		}
-		query = "SELECT " + query + " FROM pub." + exportTableName + " " + whereClause;
-		return query;
+		else if(exportSql != null){
+			return exportSql + " " + whereClause;
+		}
+		else
+			return null;
+			
 	}
 
 	public ArrayList<String> getImportQuey(ResultSetMetaData meta, ResultSet rs, int size, boolean isSilentMode){

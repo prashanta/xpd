@@ -97,6 +97,18 @@
 		<property name="profile" ref="rcvDtlTableExportProfile" />
 	</bean>
 	
+	<bean id="jobMtlTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="jobMtlTableExportProfile" />
+	</bean>
+	
+	<bean id="jobAsmblTableExportDAO" class="com.gemcity.xpd.dao.TableExportDAO">
+		<property name="exportDataSource" ref="exportDataSource" />
+		<property name="importDataSource" ref="importDataSource" />
+		<property name="profile" ref="jobAsmblTableExportProfile" />
+	</bean>
+	
 	<!-- DATABASE CONNECTIONS -->
 	<bean id="exportDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.progress.sql.jdbc.JdbcProgressDriver" />
@@ -243,6 +255,24 @@
     	<property name="whereClause" value=" WHERE RcvDtl.InspectionPending = 1 "/>
     	<property name="importTableName" value="ev_rcvdtl" />
 		<property name="importColumns" value="PackSlip, PartNum, BinNum, ReceivedComplete, PONum, VendorQty, ReceivedTo, InspectionReq, InspectionPending, ReceiptDate" />
+	</bean>
+	
+	<!-- JobMtl Table Profile -->
+	<bean id="jobMtlTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
+		<property name="exportTableName" value="JobMtl" />
+		<property name="exportSql" value="SELECT JobHead.JobNum, JobMtl.JobComplete, JobMtl.AssemblySeq, JobMtl.MtlSeq, JobMtl.BubbleNum, JobMtl.PartNum, JobMtl.QtyPer, JobMtl.RequiredQty, JobMtl.IssuedQty, JobMtl.IUM, JobMtl.IssuedComplete FROM pub.JobHead LEFT JOIN pub.JobMtl ON JobMtl.JobNum = JobHead.JobNum" />
+    	<property name="whereClause" value="WHERE JobHead.StartDate > '06-01-2016' ORDER BY JobHead.JobNum, JobMtl.AssemblySeq, JobMtl.MtlSeq"/>
+    	<property name="importTableName" value="ev_jobmtl" />
+		<property name="importColumns" value="JobNum, JobComplete, AssemblySeq, MtlSeq, BubbleNum, PartNum, QtyPer, RequiredQty, IssuedQty, IUM, IssuedComplete" />
+	</bean>
+	
+	<!-- JobAsmbl Table Profile -->
+	<bean id="jobAsmblTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile"  init-method="init">
+		<property name="exportTableName" value="JobAsmbl" />
+		<property name="exportSql" value="SELECT JobHead.JobNum, JobAsmbl.JobComplete, JobAsmbl.AssemblySeq, JobAsmbl.PartNum, JobAsmbl.QtyPer, JobAsmbl.RequiredQty, JobAsmbl.IUM, JobAsmbl.Parent, JobAsmbl.StartDate, JobAsmbl.DueDate, JobAsmbl.PriorPeer, JobAsmbl.NextPeer, JobAsmbl.Child, JobAsmbl.BomSequence, JobAsmbl.BomLevel FROM pub.JobHead LEFT JOIN pub.JobAsmbl ON JobAsmbl.JobNum = JobHead.JobNum" />
+    	<property name="whereClause" value="WHERE JobHead.StartDate > '06-01-2016' ORDER BY JobHead.JobNum, JobAsmbl.AssemblySeq"/>
+    	<property name="importTableName" value="ev_jobasmbl" />
+		<property name="importColumns" value="JobNum, JobComplete, AssemblySeq, PartNum, QtyPer, RequiredQty, IUM, Parent, StartDate, DueDate, PriorPeer, NextPeer, Child, BomSequence, BomLevel" />
 	</bean>
 	
 </beans>
