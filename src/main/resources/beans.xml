@@ -188,10 +188,10 @@
 	<!-- Vendor Table Profile -->
 	<bean id="vendorTableExportProfile" class="com.gemcity.xpd.beans.ExportProfile" init-method="init">
 		<property name="exportTableName" value="Vendor" />
-		<property name="exportColumns" value="VendorNum, VendorID, Name, Country" />
+		<property name="exportColumns" value="VendorNum, VendorID, Name, Address1, Address2, Address3, City, State, Country" />
     	<property name="whereClause" value=""/>
     	<property name="importTableName" value="ev_vendor" />
-		<property name="importColumns" value="VendorNum, VendorID, Name, Country" />
+		<property name="importColumns" value="VendorNum, VendorID, Name, Address1, Address2, Address3, City, State, Country" />
 	</bean>
 	
 	<!-- PartOpr Table Profile -->
